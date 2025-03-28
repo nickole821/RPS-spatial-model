@@ -5,6 +5,3 @@
 
 # Ignorar pasta 'data' se estiver em formato não versionado
 /output/data/
-
-# Logs
-*.log
