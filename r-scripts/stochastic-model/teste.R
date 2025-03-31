@@ -1,5 +1,10 @@
 source("./r-scripts/stochastic-model/functions.R")
 
+library(tidyverse)
+library(ggpubr)
+library(magick)
+library(ribiosUtils)
+
 strategies <- c("O", "Y", "B") # agents in the game
 
 a <- 2
@@ -12,14 +17,14 @@ rownames(payoff_matrix) <- strategies
 payoff_matrix # payoff matrix of the game
 
 size <- 100
-position_matrix <- matrix(sample(strategies, size^2, replace = TRUE,
-                                 prob = c(0.5, 0.25, 0.25)),
+position_matrix <- matrix(sample(strategies, size^2, replace = TRUE),
                           nrow = size, ncol = size) # random initial position
 position_matrix
 
 prob_death <- 0.5  # probability of death (goes from 0 to 1) equal to all players
 
-resultados <- simulation(position_matrix, payoff_matrix, num_generations = 100, prob_death = 0.5)
+resultados <- simulation(position_matrix, payoff_matrix, num_generations = 100,
+                         prob_death = 0.5)
 
 generate_image <- function(matrix_data, generation, output_dir) {
   
