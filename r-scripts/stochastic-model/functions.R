@@ -1,4 +1,5 @@
-simulation <- function(position_matrix, payoff_matrix, num_generations, prob_death) {
+simulation <- function(position_matrix, payoff_matrix, num_generations, prob_reproduce,
+                       strategy) {
   
   # to store matrices and frequencies
   all_matrices <- list(position_matrix)  
@@ -9,17 +10,47 @@ simulation <- function(position_matrix, payoff_matrix, num_generations, prob_dea
   
   
   # to obtain the 8' neighbors of the focal agent on the matrix with periodic boundaries
-  get_neighbors <- function(i, j, position_matrix) {
+  get_neighbors <- function(i, j, position_matrix, strategy = FALSE) {
     size <- nrow(position_matrix)
-    i_seq <- c((i - 1 - 1) %% size + 1, i, (i + 1 - 1) %% size + 1) 
-    j_seq <- c((j - 1 - 1) %% size + 1, j, (j + 1 - 1) %% size + 1)
+    neighbors <- c()  # Inicializando para evitar erro
     
-    neighbors_matrix <- position_matrix[i_seq, j_seq]
-    neighbors <- as.vector(neighbors_matrix)
+    if (strategy == FALSE) {
+      i_seq <- ((i - 1):(i + 1) - 1) %% size + 1
+      j_seq <- ((j - 1):(j + 1) - 1) %% size + 1
+      neighbors_matrix <- position_matrix[i_seq, j_seq]
+      neighbors <- as.vector(neighbors_matrix)
+      neighbors <- neighbors[-5]
+    } else {
+      if (position_matrix[i, j] == "B") {
+        i_seq <- ((i - 1):(i + 1) - 1) %% size + 1
+        j_seq <- ((j - 1):(j + 1) - 1) %% size + 1
+        neighbors_matrix <- position_matrix[i_seq, j_seq]
+        neighbors <- as.vector(neighbors_matrix)
+        neighbors <- neighbors[-5]
+      } else if (position_matrix[i, j] == "O") {
+        i_seq <- ((i - 2):(i + 2) - 1) %% size + 1
+        j_seq <- ((j - 2):(j + 2) - 1) %% size + 1
+        neighbors_matrix <- position_matrix[i_seq, j_seq]
+        neighbors <- as.vector(neighbors_matrix)
+        neighbors <- neighbors[-13]
+      } else if (position_matrix[i, j] == "Y") {
+        i_seq <- ((i - 3):(i + 3) - 1) %% size + 1
+        j_seq <- ((j - 3):(j + 3) - 1) %% size + 1
+        neighbors_matrix <- position_matrix[i_seq, j_seq]
+        neighbors <- as.vector(neighbors_matrix)
+        neighbors <- neighbors[-25]
+      } else {
+        # Caso de erro: definir vizinhos como os da vizinhança padrão 3x3
+        i_seq <- ((i - 1):(i + 1) - 1) %% size + 1
+        j_seq <- ((j - 1):(j + 1) - 1) %% size + 1
+        neighbors_matrix <- position_matrix[i_seq, j_seq]
+        neighbors <- as.vector(neighbors_matrix)
+        neighbors <- neighbors[-5]
+      }
+    }
     
     return(neighbors)
   }
-  
   # to calculate the payoffs of two agents on the RPS-game
   get_payoff <- function(a1, a2, payoff_matrix) {
     index <- c("O" = 1, "Y" = 2, "B" = 3)
@@ -32,7 +63,7 @@ simulation <- function(position_matrix, payoff_matrix, num_generations, prob_dea
     for (i in 1:size) {
       for (j in 1:size) {
         fitness_ID <- 0
-        a <- get_neighbors(i, j, position_matrix)
+        a <- get_neighbors(i, j, position_matrix, strategy)
         for (z in 1:length(a)) {
           fitness_ID <- fitness_ID + get_payoff(position_matrix[i, j], a[z], payoff_matrix)
         }
@@ -43,12 +74,12 @@ simulation <- function(position_matrix, payoff_matrix, num_generations, prob_dea
   }
   
   # to determine which agents are going to reproduce on the next generation (random)
-  going_to_die <- function(position_matrix, prob_death) {
+  going_to_die <- function(position_matrix, prob_reproduce) {
     intermediate_matrix <- matrix(NA, nrow = size, ncol = size)
     for (i in 1:size) {
       for (j in 1:size) {
         a <- runif(1, 0, 1)
-        if (a > prob_death) {
+        if (a > prob_reproduce) {
           intermediate_matrix[i, j] <- "E"  # agents died and the cell is empty
         } else {
           intermediate_matrix[i, j] <- position_matrix[i, j] # agent reproduced
@@ -64,8 +95,8 @@ simulation <- function(position_matrix, payoff_matrix, num_generations, prob_dea
     for (i in 1:size) {
       for (j in 1:size) {
         if (intermediate_matrix[i, j] == "E") {
-          neighbors_strategies <- get_neighbors(i, j, position_matrix_0)
-          neighbors_fitness <- get_neighbors(i, j, fitness_matrix)
+          neighbors_strategies <- get_neighbors(i, j, position_matrix_0, strategy)
+          neighbors_fitness <- get_neighbors(i, j, fitness_matrix, strategy)
           max_fitness <- which.max(neighbors_fitness)
           new_matrix[i, j] <- neighbors_strategies[max_fitness]
         } else {
@@ -83,7 +114,7 @@ simulation <- function(position_matrix, payoff_matrix, num_generations, prob_dea
     fitness_matrix <- get_fitness_matrix(position_matrix)
     
     # step 2: select agents to reproduce and die
-    intermediate_matrix <- going_to_die(position_matrix, prob_death)
+    intermediate_matrix <- going_to_die(position_matrix, prob_reproduce)
     
     # step 3: ocupying the empty spaces with fittest neighbors
     new_matrix <- get_new_matrix(position_matrix, intermediate_matrix, fitness_matrix)

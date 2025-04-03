@@ -1,12 +1,10 @@
 source("./r-scripts/stochastic-model/functions.R")
 
-library(tidyverse)
-library(ggpubr)
 library(magick)
+library(tidyverse)
 library(ribiosUtils)
 
-strategies <- c("O", "Y", "B") # agents in the game
-
+strategies <- c("O", "Y", "B")
 a <- 2
 b <- 1/a
 payoff_matrix <- matrix(c(1, b, a,
@@ -14,72 +12,71 @@ payoff_matrix <- matrix(c(1, b, a,
                           b, a, 1), byrow = T, nrow = 3)
 colnames(payoff_matrix) <- strategies
 rownames(payoff_matrix) <- strategies
-payoff_matrix # payoff matrix of the game
-
+payoff_matrix
+prob_reproduce <- 0.5
 size <- 100
+
 position_matrix <- matrix(sample(strategies, size^2, replace = TRUE),
-                          nrow = size, ncol = size) # random initial position
-position_matrix
+                          nrow = size, ncol = size)
 
-prob_death <- 0.5  # probability of death (goes from 0 to 1) equal to all players
+result <- simulation(position_matrix, payoff_matrix, num_generations = 100,
+                     prob_reproduce, strategy = TRUE)
 
-resultados <- simulation(position_matrix, payoff_matrix, num_generations = 100,
-                         prob_death = 0.5)
+df_freq <- result$frequencies
 
-generate_image <- function(matrix_data, generation, output_dir) {
+df_freq <- df_freq %>%
+  pivot_longer(cols = 2:4, names_to = "strategy", values_to = "freq")
+
+str(df_freq)
+
+# Calcular a média das estratégias por geração
+df_media <- df_freq %>%
+  group_by(geracao, strategy) %>%
+  summarise(freq_media = mean(freq), .groups = "drop")
+df_media
+
+# Criar o gráfico com todas as simulações, a média destacada e os valores no final
+ggplot(df_freq, aes(x = Generation, y = freq, color = as.factor(strategy))) +
+  geom_line() +
+  theme_minimal() +
+  labs(x = "Gerações", y = "Frequência", title = "O = 0,25 Y = 0,25 B = 0,5") +
+  scale_color_manual(values = c("O" = "tomato2", "Y" = "gold2", "B" = "blue"),
+                     name = "Estratégia", labels = c("Azul", "Laranja", "Amarelo"))
+
+
+generate_image <- function(matrix_data, generation) {
   
-  # Converter matriz para formato longo (data.frame)
-  matrix_df <- matrix2longdf(matrix_data)
+  matrix_df <- ribiosUtils::matrix2longdf(matrix_data)
   
-  # Criar o gráfico
   p <- ggplot(matrix_df, aes(x = column, y = row, fill = value)) +
     geom_tile() +
     scale_fill_manual(values = c("O" = "tomato2", "Y" = "gold2", "B" = "blue"),
                       name = "Estratégia", labels = c("Azul", "Laranja", "Amarelo")) +
     scale_y_reverse() +
-    labs(title = paste("Geração:", generation), x = NULL, y = NULL) +
+    labs(x = element_blank(), y = element_blank()) +
     theme_classic() +
-    theme(axis.text = element_blank(), axis.ticks = element_blank(),
-          text = element_text(size = 20))
+    theme(axis.text = element_blank(), axis.ticks = element_blank()) +
+    labs(title = paste("Geração:", generation)) +
+    theme(text = element_text(size = 20))
   
-  # Definir o caminho do arquivo
-  img_path <- file.path(output_dir, paste0("frame_", generation, ".png"))
-  
-  # Salvar imagem
+  img_path <- paste0("./output/gifs/generation_", generation, ".png")
   ggsave(img_path, plot = p, width = 7, height = 5, dpi = 300)
   
   return(img_path)
 }
 
-# Criar diretório para salvar imagens temporárias
-output_dir <- "./output/gifs/temporary"
-dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+image_paths <- c()
 
-# Gerar imagens para todas as matrizes
-image_paths <- map_chr(seq_along(resultados$matrices), 
-                       ~ generate_image(resultados$matrices[[.x]], .x - 1, output_dir))
+for (i in 1:length(result$matrices)) {
+  img_path <- generate_image(result$matrices[[i]], i - 1)
+  image_paths <- c(image_paths, img_path)
+}
 
-# Criar GIF
-gif <- image_animate(image_join(lapply(image_paths, image_read)), fps = 5)
+img_list <- lapply(image_paths, image_read)
+gif <- image_animate(image_join(img_list), fps = 5) # Criar o GIF usando magick
 
-# Salvar o GIF final
-gif_path <- "./output/gifs/stochastic-freq.gif"
-image_write(gif, gif_path)
+image_write(gif, "./output/gifs/evolution_radio.gif") # Salvar o GIF
 
-# Remover arquivos temporários
-unlink(output_dir, recursive = TRUE)
+file.remove(image_paths) # Limpar arquivos temporários
 
-# Abrir o GIF no navegador
-browseURL(gif_path)
-
-df_freq <- resultados$frequencies
-df_freq <- df_freq %>%
-  pivot_longer(cols = 2:4, names_to = "strategy", values_to = "freq")
-
-ggplot(df_freq, aes(x = Generation, y = freq, color = as.factor(strategy))) +
-  geom_line(size = 1) +
-  theme_minimal() +
-  labs(x = "Gerações", y = "Frequência") +
-  scale_color_manual(values = c("O" = "tomato2", "Y" = "gold2", "B" = "blue"),
-                     name = "Estratégia", labels = c("Azul", "Laranja", "Amarelo")) +
-  scale_y_continuous(limits = c(0, 1))
+browseURL("./output/gifs/evolution_radio.gif")
