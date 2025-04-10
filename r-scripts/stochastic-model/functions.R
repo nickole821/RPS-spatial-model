@@ -67,7 +67,7 @@ simulation <- function(position_matrix, payoff_matrix, num_generations, prob_rep
         for (z in 1:length(a)) {
           fitness_ID <- fitness_ID + get_payoff(position_matrix[i, j], a[z], payoff_matrix)
         }
-        fitness_matrix[i, j] <- fitness_ID
+          fitness_matrix[i, j] <- fitness_ID
       }
     }
     return(fitness_matrix)

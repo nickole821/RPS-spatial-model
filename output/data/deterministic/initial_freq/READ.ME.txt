@@ -1,0 +1,1 @@
+todas as simulações determinísticas tem probabilidade de reprodução = 0, ou seja, todos os indivíduos morrem na próxima geração e são substituídos pelo seu vizinho de maior fitness. ou seja, prob = 0 em todos
