@@ -23,11 +23,8 @@ ggplot(df_freq, aes(x = Generation, y = freq, color = as.factor(strategy))) +
                                  group = strategy), 
             size = 1.5, linetype = "solid") +
   theme_minimal() +
-  labs(x = "Gerações", y = "Frequência", title = "Prob_reproduce_0") +
+  labs(x = "Gerações", y = "Frequência", title = "death") +
   scale_color_manual(values = c("O" = "tomato2", "Y" = "gold2", "B" = "blue"),
                      name = "Estratégia", labels = c("Azul", "Laranja", "Amarelo")) +
   theme(text = element_text(size = 24)) +
   scale_y_continuous(lim = c(0,1))
-
-ggsave(filename = "./output/figures/initial_freq/O025-Y025-B05.pdf", plot = plot_freq,
-       device = pdf, width = 30, height = 25, units = "cm")

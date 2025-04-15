@@ -27,7 +27,7 @@ df_freq <- df_freq %>%
   mutate(prob = 0.25, freq_0_O = 1/3, freq_0_Y = 1/3, freq_0_B = 1/3, neighbors = "TRUE", devide = "FALSE")
 str(df_freq)
 
-write.csv(df_freq, "./output/data/stochastic/neighbors/real-r/p025.csv")
+write.csv(df_freq, "./output/data/stochastic/diferent-neighborhood/real-r/p025.csv")
 
 ##
 path_all <- "./output/data/stochastic/simetric_payoff-matrix/prob_reproduce/"

@@ -1,0 +1,7 @@
+aqui, muda o tipo de vizinhança
+
+real-r: vizinhança do artigo (B=Y<O)
+
+neighbours: vizinhança que propusemos (B<O<Y)
+
+divide: divide o payoff pelo n de vizinhos (para a vizinhança que propusemos)

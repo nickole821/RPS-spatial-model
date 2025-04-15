@@ -1,4 +1,0 @@
-raios com 
-B = 8
-O = 24
-Y = 48

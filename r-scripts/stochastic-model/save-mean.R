@@ -1,5 +1,6 @@
-df_freq <- read.csv("./output/data/stochastic/neighbors/real-r/p025.csv",
+df_freq <- read.csv("./output/data/stochastic/diferent-neighborhood/real-r/p025.csv",
                      header = T)
+
 str(df_freq)
 df_freq$freq_0_O
 
@@ -28,10 +29,10 @@ freq_p025 <- ggplot(df_freq, aes(x = Generation, y = freq, color = as.factor(str
   theme(text = element_text(size = 24)) +
   scale_y_continuous(lim = c(0,1))
 
-ggsave(filename = "./output/data/stochastic/neighbors/real-r/figures/freq_p025.pdf",
+ggsave(filename = "./output/data/stochastic/diferent-neighborhood/real-r/figures/freq_p025.pdf",
        plot = freq_p025, device = pdf, width = 30, height = 25, units = "cm")
 
-write.csv(df_media, "./output/data/stochastic/neighbors/real-r/mean/mean_p025.csv")
+write.csv(df_media, "./output/data/stochastic/diferent-neighborhood/real-r/mean/mean_p025.csv")
 
 freq_mean_p025 <- ggplot(df_media, aes(x = Generation, y = freq_media,
                                       color = as.factor(strategy), group = strategy)) +
@@ -45,6 +46,6 @@ freq_mean_p025 <- ggplot(df_media, aes(x = Generation, y = freq_media,
   scale_fill_manual(values = c("O" = "tomato2", "Y" = "gold2", "B" = "blue"))+
   theme(text = element_text(size = 24))
 
-ggsave(filename = "./output/data/stochastic/neighbors/real-r/mean/mean_p025.pdf",
+ggsave(filename = "./output/data/stochastic/diferent-neighborhood/real-r/mean/mean_p025.pdf",
        plot = freq_mean_p025, device = pdf, width = 30, height = 25, units = "cm")
 
