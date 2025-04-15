@@ -4,7 +4,7 @@ library(tidyverse)
 library(purrr)
 
 # Defina o diretório principal onde estão as pastas
-path <- "./output/data/stochastic/neighbors/real-r/p05/"
+path <- "./output/data/stochastic/neighbors/real-r/p025/"
 
 files <- list.files(path, pattern = "^freq.*\\.csv$",
                     full.names = TRUE, recursive = TRUE)
@@ -24,10 +24,10 @@ df_freq <- df_freq %>%
   rename(sim = id)
 str(df_freq)
 df_freq <- df_freq %>% 
-  mutate(prob = 0.5, freq_0_O = 1/3, freq_0_Y = 1/3, freq_0_B = 1/3, neighbors = "TRUE", devide = "FALSE")
+  mutate(prob = 0.25, freq_0_O = 1/3, freq_0_Y = 1/3, freq_0_B = 1/3, neighbors = "TRUE", devide = "FALSE")
 str(df_freq)
 
-write.csv(df_freq, "./output/data/stochastic/neighbors/real-r/p05.csv")
+write.csv(df_freq, "./output/data/stochastic/neighbors/real-r/p025.csv")
 
 ##
 path_all <- "./output/data/stochastic/simetric_payoff-matrix/prob_reproduce/"
@@ -47,7 +47,7 @@ str(df_freq_all)
 
 write.csv(df_freq_all, "./output/data/stochastic/simetric_payoff-matrix/prob_reproduce/freq.csv")
 
-unlink("./output/data/stochastic/neighbors/real-r/p05/", recursive = TRUE)
+unlink("./output/data/stochastic/neighbors/real-r/p025/", recursive = TRUE)
 unlink("./output/data/stochastic/simetric_payoff-matrix/neighbors/p025/", recursive = TRUE)
 unlink("./output/data/stochastic/simetric_payoff-matrix/neighbors/p05/", recursive = TRUE)
 
