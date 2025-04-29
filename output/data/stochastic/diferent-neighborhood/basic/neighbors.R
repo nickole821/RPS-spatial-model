@@ -12,10 +12,10 @@ colnames(payoff_matrix) <- strategies
 rownames(payoff_matrix) <- strategies
 payoff_matrix
 n_sim <- 100
-prob_reproduce <- 0.5
+prob_reproduce <- 0
 size <- 100
 
-dir.create("./output/data/stochastic/simetric_payoff-matrix/neighbors/teste_devide/p05")
+dir.create("./output/data/stochastic/diferent-neighborhood/basic/p0")
 
 seeds <- readRDS("data/sementes_simulacao.rds")
 
@@ -27,10 +27,10 @@ for (i in 1:n_sim) {
   position_matrix <- matrix(sample(strategies, size^2, replace = TRUE),
                             nrow = size, ncol = size)
   
-  result <- simulation(position_matrix, payoff_matrix, num_generations = 200,
+  result <- simulation(position_matrix, payoff_matrix, num_generations = 500,
                        prob_reproduce, strategy = TRUE)
   
-  pasta_resultados <- file.path("./output/data/stochastic/simetric_payoff-matrix/neighbors/teste_devide/p05/",
+  pasta_resultados <- file.path("./output/data/stochastic/diferent-neighborhood/basic/p0",
                                 paste0("sim_", i))
   dir.create(pasta_resultados, recursive = TRUE)
   

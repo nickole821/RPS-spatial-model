@@ -47,19 +47,15 @@ p05_adapneighborhood <- read.csv("./output/data/stochastic/diferent-neighborhood
 p05_adapneighborhood <- p05_adapneighborhood %>%
   mutate(raio = "adap")
 
-
-regular_neigbborhood <- read.csv("./output/data/stochastic/regular-neighborhood/prob_reproduce/mean/freq_mean_sd.csv",
-                                header = T)
-regular_neigbborhood <- regular_neigbborhood %>%
+regular_p0 <- read.csv("./output/data/stochastic/regular-neighborhood/prob_reproduce/mean/mean_p0.csv")
+regular_p0 <- regular_p0 %>%
   mutate(raio = "homogenous")
-str(regular_neigbborhood)
-regular_p0 <- regular_neigbborhood %>%
-  filter(prob == 0)
 regular_p025 <- read.csv("./output/data/stochastic/regular-neighborhood/prob_reproduce/mean/mean_p025.csv")
 regular_p025 <- regular_p025 %>%
   mutate(raio = "homogenous")
-regular_p05 <- regular_neigbborhood %>%
-  filter(prob == 0.5)
+regular_p05 <- read.csv("./output/data/stochastic/regular-neighborhood/prob_reproduce/mean/mean_p05.csv")
+regular_p05 <- regular_p05 %>%
+  mutate(raio = "homogenous")
 
 
 df <- dplyr::bind_rows(p0_basicneighborhood, p025_basicneighborhood, p05_basicneighborhood,
@@ -83,7 +79,7 @@ plot_raio <- df %>%
   facet_wrap(~as.factor(prob) + strategy) +
   scale_color_manual(values = c("O" = "tomato2", "Y" = "gold2", "B" = "blue"),
                      name = "Estratégia", labels = c("Azul", "Laranja", "Amarelo")) +
-  scale_linetype_manual(values = c(basico = 1, real = 3, adap = 4, homogenous = 5),
+  scale_linetype_manual(values = c(basico = 4, real = 2, adap = 3, homogenous = 1),
                         labels = c("Y>O>B", "O>B=Y", "Adaptative Y", "O=Y=B")) +
   theme(text = element_text(size = 24))
 
